@@ -50,7 +50,7 @@
     }
     .glow-2 {
       width: 500px; height: 500px;
-      background: var(--accent-blue);
+      background: var(--black);
       bottom: -150px; right: -100px;
     }
 
@@ -59,14 +59,24 @@
       margin-bottom: 28px;
     }
 
+        
+    @font-face {
+      font-family: 'NothingTitle';
+      src: url('./nothing.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    /* Step B: Apply it ONLY to the "NOTHING // MATRIX" title (h1) */
     h1 {
-      font-family: 'DotGothic16', monospace;
+      font-family: 'NothingTitle', monospace; /* <-- Changed from DotGothic16 to NothingTitle */
       letter-spacing: 3px;
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: 400;
       text-transform: uppercase;
       margin-bottom: 6px;
     }
+
 
     h1 span { color: var(--red); }
 
