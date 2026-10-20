@@ -2,12 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Nothing Matrix Studio</title>
-  <!-- Load Inter and DotGothic16 from Google Fonts -->
+
+  <!-- Web App Wrapper Settings -->
+  <meta name="theme-color" content="#070709">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Matrix">
+
+  <!-- Browser Tab Favicon & App Manifest -->
+  <link rel="icon" type="image/svg+xml" href="./icon.svg">
+  <link rel="apple-touch-icon" id="appleIcon" href="./icon.svg">
+  <link rel="manifest" href="./manifest.json">
+
+  <!-- Load Inter Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
       --bg: #070709;
@@ -15,8 +28,22 @@
       --glass-border: rgba(255, 255, 255, 0.12);
       --text: #f5f5f7;
       --text-muted: #98989f;
-      --red: #D71921;
-      --accent-blue: #2563eb;
+      --accent: #D71921;
+      --accent-glow: rgba(215, 25, 33, 0.45);
+    }
+
+    /* Pink Theme Override */
+    body.theme-pink {
+      --accent: #FF2E93;
+      --accent-glow: rgba(255, 46, 147, 0.45);
+    }
+
+    /* Load your uploaded custom .otf font from GitHub */
+    @font-face {
+      font-family: 'NothingTitle';
+      src: url('./nothing.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,58 +59,55 @@
       padding: 32px 20px;
       position: relative;
       overflow-x: hidden;
+      user-select: none;
+      transition: background-color 0.3s ease;
     }
 
-    /* Ambient Glowing Orbs for Gaussian Blur Glassmorphism */
+    /* Ambient Glowing Orbs (Both use active theme accent, no blue glow) */
     .ambient-glow {
       position: fixed;
       border-radius: 50%;
-      filter: blur(110px);
+      filter: blur(120px);
       z-index: -1;
       pointer-events: none;
-      opacity: 0.45;
+      opacity: 0.42;
+      background: var(--accent);
+      transition: background 0.35s ease;
     }
-    .glow-1 {
-      width: 420px; height: 420px;
-      background: var(--red);
-      top: -100px; left: -80px;
-    }
-    .glow-2 {
-      width: 500px; height: 500px;
-      background: var(--black);
-      bottom: -150px; right: -100px;
-    }
+    .glow-1 { width: 440px; height: 440px; top: -110px; left: -90px; }
+    .glow-2 { width: 480px; height: 480px; bottom: -150px; right: -100px; opacity: 0.32; }
 
     header {
-      text-align: center;
+      display: flex;
+      align-items: center;
+      gap: 14px;
       margin-bottom: 28px;
     }
 
-        
-    @font-face {
-      font-family: 'NothingTitle';
-      src: url('./nothing.otf') format('opentype');
-      font-weight: normal;
-      font-style: normal;
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
     }
 
-    /* Step B: Apply it ONLY to the "NOTHING // MATRIX" title (h1) */
-    h1 {
-      font-family: 'NothingTitle', monospace; /* <-- Changed from DotGothic16 to NothingTitle */
+    .title-group h1 {
+      font-family: 'NothingTitle', monospace;
       letter-spacing: 3px;
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 400;
       text-transform: uppercase;
-      margin-bottom: 6px;
+      margin-bottom: 2px;
     }
 
+    .title-group h1 span {
+      color: var(--accent);
+      transition: color 0.25s ease;
+    }
 
-    h1 span { color: var(--red); }
-
-    header p {
-      font-size: 0.875rem;
+    .title-group p {
+      font-size: 0.82rem;
       color: var(--text-muted);
-      font-weight: 400;
     }
 
     .container {
@@ -98,7 +122,6 @@
       .container { grid-template-columns: 1fr; }
     }
 
-    /* Frosted Glass UI Panels (Gaussian Blur) */
     .glass-panel {
       background: var(--glass-bg);
       backdrop-filter: blur(28px) saturate(160%);
@@ -135,6 +158,47 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* Theme Pill Switcher */
+    .theme-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+    }
+
+    .theme-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .theme-btn.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 12px var(--accent-glow);
+    }
+
+    .dot-swatch {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
     select {
       background: rgba(255, 255, 255, 0.06);
       color: var(--text);
@@ -148,13 +212,10 @@
       outline: none;
     }
 
-    select option {
-      background: #18181b;
-      color: var(--text);
-    }
+    select option { background: #18181b; color: var(--text); }
 
     input[type="range"] {
-      accent-color: var(--red);
+      accent-color: var(--accent);
       width: 100%;
       cursor: pointer;
       height: 6px;
@@ -173,10 +234,9 @@
     }
 
     input[type="checkbox"] {
-      accent-color: var(--red);
+      accent-color: var(--accent);
       width: 18px;
       height: 18px;
-      border-radius: 4px;
       cursor: pointer;
     }
 
@@ -191,7 +251,7 @@
       font-size: 0.9rem;
       cursor: pointer;
       text-align: center;
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
     }
 
     .btn:hover:not(:disabled) {
@@ -199,15 +259,13 @@
       box-shadow: 0 6px 20px rgba(255, 255, 255, 0.15);
     }
 
-    .btn:active:not(:disabled) { transform: scale(0.98); }
-
-    .btn-red {
-      background: var(--red);
+    .btn-accent {
+      background: var(--accent);
       color: white;
     }
 
-    .btn-red:hover:not(:disabled) {
-      box-shadow: 0 6px 24px rgba(215, 25, 33, 0.4);
+    .btn-accent:hover:not(:disabled) {
+      box-shadow: 0 6px 24px var(--accent-glow);
     }
 
     .btn:disabled { opacity: 0.35; cursor: not-allowed; }
@@ -240,18 +298,32 @@
 </head>
 <body>
 
-  <!-- Ambient background blobs for Frosted Glass UI -->
   <div class="ambient-glow glow-1"></div>
   <div class="ambient-glow glow-2"></div>
 
   <header>
-    <h1>NOTHING <span>//</span> MATRIX</h1>
-    <p>Dot-Matrix & Color Halftone Image Processor</p>
+    <img src="./icon.svg" alt="App Logo" class="brand-icon">
+    <div class="title-group">
+      <h1>NOTHING <span>//</span> MATRIX</h1>
+      <p>Dot-Matrix & Color Halftone Image Processor</p>
+    </div>
   </header>
 
   <div class="container">
-    <!-- Controls Sidebar -->
     <div class="controls glass-panel">
+      <!-- Theme Color Switcher -->
+      <div class="control-group">
+        <label><span>Theme Accent</span></label>
+        <div class="theme-switcher">
+          <button type="button" class="theme-btn active" id="redThemeBtn">
+            <span class="dot-swatch" style="background:#D71921;"></span> Nothing Red
+          </button>
+          <button type="button" class="theme-btn" id="pinkThemeBtn">
+            <span class="dot-swatch" style="background:#FF2E93;"></span> Cyber Pink
+          </button>
+        </div>
+      </div>
+
       <label class="btn" for="upload">Upload Image</label>
       <input type="file" id="upload" accept="image/*">
 
@@ -285,15 +357,14 @@
         <input type="range" id="bgBlur" min="0" max="24" value="0">
       </div>
 
-      <label class="checkbox-row" id="redAccentRow">
+      <label class="checkbox-row">
         <input type="checkbox" id="redAccent" checked>
-        Enable Nothing Red Accents
+        <span id="accentLabelText">Enable Nothing Accent Highlights</span>
       </label>
 
-      <button class="btn btn-red" id="downloadBtn" disabled>Download PNG</button>
+      <button class="btn btn-accent" id="downloadBtn" disabled>Download PNG</button>
     </div>
 
-    <!-- Canvas Output -->
     <div class="preview-area glass-panel">
       <div class="placeholder" id="placeholder">Select an image to apply the dot-matrix effect</div>
       <canvas id="canvas"></canvas>
@@ -312,7 +383,10 @@
     const redAccentInput = document.getElementById('redAccent');
     const downloadBtn = document.getElementById('downloadBtn');
     const placeholder = document.getElementById('placeholder');
+    const redThemeBtn = document.getElementById('redThemeBtn');
+    const pinkThemeBtn = document.getElementById('pinkThemeBtn');
 
+    let currentAccentHex = '#D71921';
     let sourceImage = new Image();
     const offscreen = document.createElement('canvas');
     const offCtx = offscreen.getContext('2d', { willReadFrequently: true });
@@ -323,6 +397,23 @@
       [ 4/17, 12/17,  2/17, 10/17],
       [16/17,  8/17, 14/17,  6/17]
     ];
+
+    // Theme Switching Logic
+    redThemeBtn.addEventListener('click', () => {
+      document.body.classList.remove('theme-pink');
+      redThemeBtn.classList.add('active');
+      pinkThemeBtn.classList.remove('active');
+      currentAccentHex = '#D71921';
+      if (sourceImage.src) renderMatrix();
+    });
+
+    pinkThemeBtn.addEventListener('click', () => {
+      document.body.classList.add('theme-pink');
+      pinkThemeBtn.classList.add('active');
+      redThemeBtn.classList.remove('active');
+      currentAccentHex = '#FF2E93';
+      if (sourceImage.src) renderMatrix();
+    });
 
     upload.addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -357,7 +448,7 @@
       const contrast = parseFloat(contrastInput.value);
       const blurAmount = parseInt(bgBlurInput.value, 10);
       const mode = renderModeInput.value;
-      const useRed = redAccentInput.checked;
+      const useAccent = redAccentInput.checked;
 
       const scale = Math.min(1, 1600 / sourceImage.width);
       const width = Math.floor(sourceImage.width * scale);
@@ -366,17 +457,13 @@
       canvas.width = offscreen.width = width;
       canvas.height = offscreen.height = height;
 
-      // Apply optional Gaussian Blur to the source image
       offCtx.filter = blurAmount > 0 ? `blur(${blurAmount}px)` : 'none';
       offCtx.drawImage(sourceImage, 0, 0, width, height);
       offCtx.filter = 'none';
       const imgData = offCtx.getImageData(0, 0, width, height).data;
 
       if (mode === 'colorOverlay') {
-        // 1. Draw the smooth vibrant image as the base layer
         ctx.drawImage(offscreen, 0, 0);
-
-        // 2. Overlay uniform halftone grid dots that blend with the underlying gradient
         const radius = (cellSize / 2) * dotScale;
 
         for (let y = 0; y < height; y += cellSize) {
@@ -389,7 +476,6 @@
             const g = imgData[idx + 1];
             const b = imgData[idx + 2];
 
-            // Darken the sampled pixel color to create that subtle embedded matrix dot look
             const darkenFactor = 0.55 / contrast;
             const dotR = Math.max(0, Math.floor(r * darkenFactor));
             const dotG = Math.max(0, Math.floor(g * darkenFactor));
@@ -404,7 +490,6 @@
         return;
       }
 
-      // Monochrome / Classic Modes
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, width, height);
 
@@ -425,11 +510,11 @@
 
           const centerX = x + cellSize / 2;
           const centerY = y + cellSize / 2;
-          const isRed = useRed && (r > 155 && r > g * 1.8 && r > b * 1.8);
+          const isWarmHighlight = useAccent && (r > 155 && r > g * 1.6 && r > b * 1.4);
 
           ctx.beginPath();
-          if (isRed) {
-            ctx.fillStyle = '#D71921';
+          if (isWarmHighlight) {
+            ctx.fillStyle = currentAccentHex; // Uses Nothing Red or Cyber Pink!
             ctx.arc(centerX, centerY, maxRadius, 0, Math.PI * 2);
           } else if (mode === 'bayer') {
             const matrixX = Math.floor(x / cellSize) % 4;
@@ -474,6 +559,16 @@
       link.href = canvas.toDataURL('image/png');
       link.click();
     });
+
+    // Convert icon.svg to PNG for iOS Home Screen support
+    const iconImg = new Image();
+    iconImg.src = './icon.svg';
+    iconImg.onload = () => {
+      const c = document.createElement('canvas');
+      c.width = c.height = 512;
+      c.getContext('2d').drawImage(iconImg, 0, 0, 512, 512);
+      document.getElementById('appleIcon').href = c.toDataURL('image/png');
+    };
   </script>
 </body>
 </html>
