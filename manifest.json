@@ -1,0 +1,18 @@
+{
+  "name": "Nothing Matrix Studio",
+  "short_name": "Matrix",
+  "description": "Nothing OS style dot-matrix and halftone image filter.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070709",
+  "theme_color": "#070709",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
